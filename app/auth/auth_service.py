@@ -1,16 +1,10 @@
+import bcrypt
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException, Depends, Security
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.config import JWT_SECRET
-from fastapi import Security
-
-# Hackathon demo users
-USERS = {
-    "teller1": {"password": "password123", "role": "teller"},
-    "auditor1": {"password": "password123", "role": "auditor"},
-    "admin1": {"password": "password123", "role": "admin"},
-}
+from app.services.db_service import get_user_by_username
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
@@ -18,17 +12,38 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 security = HTTPBearer()
 
 
+# ------------------------------------------------------------------
+# Password helpers
+# ------------------------------------------------------------------
+def hash_password(plain: str) -> str:
+    return bcrypt.hashpw(plain.encode(), bcrypt.gensalt()).decode()
+
+
+def verify_password(plain: str, hashed: str) -> bool:
+    return bcrypt.checkpw(plain.encode(), hashed.encode())
+
+
+# ------------------------------------------------------------------
+# Auth
+# ------------------------------------------------------------------
 def authenticate_user(username: str, password: str):
-    user = USERS.get(username)
-    if not user or user["password"] != password:
+    """Fetch user from DB and verify bcrypt password."""
+    user = get_user_by_username(username)
+    if not user:
         return None
-    return {"username": username, "role": user["role"]}
+    if not verify_password(password, user["password_hash"]):
+        return None
+    return user  # { id, username, password_hash, role }
 
 
-def create_access_token(data: dict):
-    to_encode = data.copy()
+def create_access_token(user: dict) -> str:
+    to_encode = {
+        "user_id":  user["id"],
+        "username": user["username"],
+        "role":     user["role"],
+    }
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
+    to_encode["exp"] = expire
     return jwt.encode(to_encode, JWT_SECRET, algorithm=ALGORITHM)
 
 

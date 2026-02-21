@@ -2,10 +2,8 @@ import hmac
 import hashlib
 from app.config import SEARCH_INDEX_KEY
 
-KEY = SEARCH_INDEX_KEY.encode()
-
-if len(KEY) != 32:
-    raise ValueError("SEARCH_INDEX_KEY must be exactly 32 bytes")
+# Derive a stable 32-byte key from the secret (SHA-256)
+KEY = hashlib.sha256(SEARCH_INDEX_KEY.encode()).digest()
 
 
 def normalize(text: str) -> str:
@@ -24,17 +22,13 @@ def hmac_trigram(trigram: str) -> bytes:
 
 
 def build_search_index(text: str, bitmask_size: int = 1024) -> int:
-    """
-    Returns an integer bitmask representing the searchable index.
-    """
+    """Returns an integer bitmask representing the searchable index."""
     trigrams = generate_trigrams(text)
     bitmask = 0
-
     for trigram in trigrams:
         digest = hmac_trigram(trigram)
         position = int.from_bytes(digest, "big") % bitmask_size
         bitmask |= 1 << position
-
     return bitmask
 
 
