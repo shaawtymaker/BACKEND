@@ -17,7 +17,8 @@ def search(body: SearchRequest, user=Depends(get_current_user)):
     records = fetch_candidates_by_search_mask(query_mask)
 
     if user["role"] == "teller":
-        decrypted = [decrypt_customer(record[1]) for record in records]
+        # psycopg2 returns BYTEA as memoryview — must convert to bytes first
+        decrypted = [decrypt_customer(bytes(record[1])) for record in records]
         return {"results": decrypted}
 
     elif user["role"] == "auditor":
