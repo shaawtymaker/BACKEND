@@ -6,9 +6,9 @@ const HowItWorks = () => {
   const [open, setOpen] = useState(false);
 
   const steps = [
-    { icon: Send, title: "Client submits query", desc: "The search term is encrypted client-side before leaving the browser." },
-    { icon: Key, title: "Backend creates secure search token", desc: "A trapdoor token is generated using searchable encryption, enabling matching without decryption." },
-    { icon: Database, title: "DB matches encrypted index", desc: "The database finds matches on encrypted data; only authorized roles can decrypt the results." },
+    { icon: Send, title: "User submits query (over TLS)", desc: "The search term is sent securely to the backend over an encrypted connection." },
+    { icon: Key, title: "Backend generates secure search token / query mask", desc: "A trapdoor token is generated server-side using searchable encryption, enabling matching without exposing plaintext." },
+    { icon: Database, title: "DB matches encrypted index; backend reveals only what the role is allowed to see", desc: "The database finds matches on encrypted data; RBAC controls which fields are decrypted and returned." },
   ];
 
   return (

@@ -1,6 +1,6 @@
 export const USE_MOCK_API = true;
 
-export type Role = "teller" | "auditor";
+export type Role = "bank_staff" | "compliance";
 
 export interface User {
   username: string;
@@ -16,14 +16,14 @@ export interface Customer {
   branchCode: string;
 }
 
-export interface TellerResult {
+export interface StaffResult {
   name: string;
   accountNumber: string;
   accountType: string;
   branchCode: string;
 }
 
-export interface AuditorResult {
+export interface ComplianceResult {
   recordId: string;
   status: string;
 }
@@ -40,8 +40,8 @@ const MOCK_CUSTOMERS: Customer[] = [
 ];
 
 const MOCK_USERS: Record<string, { password: string; role: Role }> = {
-  teller1: { password: "teller1", role: "teller" },
-  auditor1: { password: "auditor1", role: "auditor" },
+  bankstaff1: { password: "bankstaff1", role: "bank_staff" },
+  compliance1: { password: "compliance1", role: "compliance" },
 };
 
 function delay(ms: number) {
@@ -60,7 +60,7 @@ export async function mockLogin(username: string, password: string): Promise<Use
 export async function mockSearch(
   query: string,
   role: Role
-): Promise<TellerResult[] | AuditorResult[]> {
+): Promise<StaffResult[] | ComplianceResult[]> {
   await delay(1000);
   const q = query.toLowerCase();
   const matches = MOCK_CUSTOMERS.filter(
@@ -69,7 +69,7 @@ export async function mockSearch(
       c.accountNumber.toLowerCase().includes(q)
   );
 
-  if (role === "teller") {
+  if (role === "bank_staff") {
     return matches.map((c) => ({
       name: c.name,
       accountNumber: c.accountNumber,
@@ -95,7 +95,7 @@ export async function realLogin(username: string, password: string): Promise<Use
   return res.json();
 }
 
-export async function realSearch(query: string, token: string): Promise<TellerResult[] | AuditorResult[]> {
+export async function realSearch(query: string, token: string): Promise<StaffResult[] | ComplianceResult[]> {
   const res = await fetch("/search", {
     method: "POST",
     headers: {
@@ -113,7 +113,7 @@ export async function login(username: string, password: string): Promise<User> {
   return realLogin(username, password);
 }
 
-export async function search(query: string, user: User): Promise<TellerResult[] | AuditorResult[]> {
+export async function search(query: string, user: User): Promise<StaffResult[] | ComplianceResult[]> {
   if (USE_MOCK_API) return mockSearch(query, user.role);
   return realSearch(query, user.token);
 }
