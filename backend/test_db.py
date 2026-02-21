@@ -37,3 +37,10 @@ print("Fetching by mask...")
 
 matches = fetch_candidates_by_search_mask(b"888888")
 print("Mask matches:", matches)
+
+from repository import log_action
+
+log_action("admin", "Created customer ACC123456")
+log_action("admin", "Deleted customer ACC998877")
+
+print("Audit entries inserted")
