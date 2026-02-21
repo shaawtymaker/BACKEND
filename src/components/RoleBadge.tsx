@@ -1,4 +1,4 @@
-import type { Role } from "@/lib/mockApi";
+import type { Role } from "@/lib/api";
 import { Shield, Eye } from "lucide-react";
 
 interface RoleBadgeProps {

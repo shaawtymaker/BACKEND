@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
-import { search as apiSearch, type StaffResult, type ComplianceResult } from "@/lib/mockApi";
+import { search as apiSearch, type StaffResult, type ComplianceResult } from "@/lib/api";
 import RoleBadge from "@/components/RoleBadge";
 import ResultsTable from "@/components/ResultsTable";
 import HowItWorks from "@/components/HowItWorks";

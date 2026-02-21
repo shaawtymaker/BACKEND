@@ -1,12 +1,10 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
-import { login as apiLogin, type User } from "@/lib/mockApi";
+import { login as apiLogin, type User } from "@/lib/api";
 
 interface AuthContextType {
-  user: User | null;
-  isLoading: boolean;
-  error: string | null;
-  login: (username: string, password: string) => Promise<void>;
-  logout: () => void;
+  id: number;
+  username: string;
+  role: "bank_staff" | "compliance";
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);

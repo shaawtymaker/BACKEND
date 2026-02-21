@@ -1,5 +1,3 @@
-export const USE_MOCK_API = true;
-
 export type Role = "bank_staff" | "compliance";
 
 export interface User {

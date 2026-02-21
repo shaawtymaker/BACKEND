@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import type { StaffResult, ComplianceResult, Role } from "@/lib/mockApi";
+import type { StaffResult, ComplianceResult, Role } from "@/lib/api";
 import { Lock, Unlock, Search, Pencil, Plus } from "lucide-react";
 
 interface ResultsTableProps {
