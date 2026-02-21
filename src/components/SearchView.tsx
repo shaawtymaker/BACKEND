@@ -1,21 +1,27 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
-import { search as apiSearch, type TellerResult, type AuditorResult } from "@/lib/mockApi";
+import { search as apiSearch, type StaffResult, type ComplianceResult } from "@/lib/mockApi";
 import RoleBadge from "@/components/RoleBadge";
 import ResultsTable from "@/components/ResultsTable";
 import HowItWorks from "@/components/HowItWorks";
+import ThemeToggle from "@/components/ThemeToggle";
 import { Search, LogOut, Shield, AlertCircle } from "lucide-react";
 
 const SearchView = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<TellerResult[] | AuditorResult[]>([]);
+  const [results, setResults] = useState<StaffResult[] | ComplianceResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (!user) return null;
+  if (!user) {
+    navigate("/login");
+    return null;
+  }
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +39,11 @@ const SearchView = () => {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -40,7 +51,6 @@ const SearchView = () => {
       transition={{ duration: 0.4 }}
       className="min-h-screen flex flex-col"
     >
-      {/* Top bar */}
       <header className="glass-strong border-b border-border/50 sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -48,23 +58,21 @@ const SearchView = () => {
             <span className="font-semibold text-sm tracking-tight">SecureBank</span>
           </div>
           <RoleBadge role={user.role} />
-          <button
-            onClick={logout}
-            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline">Logout</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Main content */}
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 sm:px-6 py-10">
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gradient-primary">
             Encrypted Customer Search
           </h1>
@@ -73,7 +81,6 @@ const SearchView = () => {
           </p>
         </motion.div>
 
-        {/* Search form */}
         <motion.form
           onSubmit={handleSearch}
           initial={{ opacity: 0, y: 15 }}
@@ -101,7 +108,6 @@ const SearchView = () => {
           </button>
         </motion.form>
 
-        {/* Error */}
         {error && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -113,20 +119,9 @@ const SearchView = () => {
           </motion.div>
         )}
 
-        {/* Results */}
-        <ResultsTable
-          results={results}
-          role={user.role}
-          isLoading={isLoading}
-          hasSearched={hasSearched}
-        />
+        <ResultsTable results={results} role={user.role} isLoading={isLoading} hasSearched={hasSearched} />
 
-        {/* How it works */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
           <HowItWorks />
         </motion.div>
       </main>
