@@ -16,10 +16,12 @@ def insert_customer(customer_id: str, encrypted_blob: bytes, search_index: int):
     conn = get_connection()
     cur = conn.cursor()
 
+    bitmask = format(search_index, '01024b')
+
     cur.execute("""
         INSERT INTO customer_records (id, encrypted_data, search_index)
-        VALUES (%s, %s, %s)
-    """, (customer_id, encrypted_blob, search_index))
+        VALUES (%s, %s, %s::bit(1024))
+    """, (customer_id, encrypted_blob, bitmask))
 
     conn.commit()
     cur.close()
@@ -81,11 +83,14 @@ def fetch_candidates_by_search_mask(mask: int):
     conn = get_connection()
     cur = conn.cursor()
 
+    # Convert int mask to 1024-bit binary string
+    bitmask = format(mask, '01024b')
+
     cur.execute("""
         SELECT id, encrypted_data, search_index, created_at
         FROM customer_records
-        WHERE (search_index & %s) = %s
-    """, (mask, mask))
+        WHERE (search_index & %s::bit(1024)) = %s::bit(1024)
+    """, (bitmask, bitmask))
 
     results = cur.fetchall()
 
