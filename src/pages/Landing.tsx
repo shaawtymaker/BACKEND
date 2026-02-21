@@ -1,3 +1,4 @@
+import Hero from "@/components/landing/Hero";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Shield, Lock, Search, Database, Key, AlertTriangle, Eye, Zap, ArrowRight } from "lucide-react";
@@ -42,6 +43,17 @@ const Landing = () => {
         </header>
 
         {/* Hero */}
+         
+    <div className="relative">
+      <div className="noise" />
+      <Hero />
+
+      <section id="how" className="mx-auto max-w-6xl px-6 pb-16">
+        {/* later: add HowItWorks cards here using Reveal + GlassCard */}
+      </section>
+    </div>
+  
+
         <section className="max-w-4xl mx-auto px-6 pt-20 pb-16 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-xs font-mono text-muted-foreground mb-6">

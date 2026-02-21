@@ -1,33 +1,67 @@
+import { useEffect } from "react";
+import Lenis from "@studio-freight/lenis";
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+
 import Landing from "./pages/Landing";
 import LoginView from "./components/LoginView";
 import SearchView from "./components/SearchView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+<div
+  className="cursor-glow"
+  onMouseMove={(e) => {
+    const x = `${e.clientX}px`;
+    const y = `${e.clientY}px`;
+    document.documentElement.style.setProperty("--mouse-x", x);
+    document.documentElement.style.setProperty("--mouse-y", y);
+  }}
+>
+</div>
+export default function App() {
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      smoothWheel: true,
+      });
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<LoginView />} />
-            <Route path="/dashboard" element={<SearchView />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
 
-export default App;
+    // Cleanup (safe)
+    return () => {
+      // Some Lenis builds expose destroy()
+      // If TS complains, remove this line.
+      // @ts-ignore
+      lenis.destroy?.();
+    };
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/login" element={<LoginView />} />
+              <Route path="/dashboard" element={<SearchView />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}

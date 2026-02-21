@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
@@ -43,6 +43,31 @@ const SearchView = () => {
     logout();
     navigate("/");
   };
+
+  /** --- Custom Bubble Cursor Effect --- */
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const bubble = document.createElement("div");
+      bubble.className = "cursor-bubble";
+
+      // Randomize between primary and secondary glow
+      const hue = Math.random() > 0.5 ? 187 : 265;
+      bubble.style.background = `hsla(${hue}, 100%, 38%, 0.4)`;
+      bubble.style.boxShadow = `0 0 10px hsla(${hue}, 100%, 38%, 0.6), 0 0 20px hsla(${hue}, 100%, 38%, 0.2)`;
+
+      bubble.style.left = `${e.clientX}px`;
+      bubble.style.top = `${e.clientY}px`;
+
+      document.body.appendChild(bubble);
+
+      setTimeout(() => {
+        bubble.remove();
+      }, 800); // matches CSS animation duration
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   return (
     <motion.div
@@ -119,7 +144,12 @@ const SearchView = () => {
           </motion.div>
         )}
 
-        <ResultsTable results={results} role={user.role} isLoading={isLoading} hasSearched={hasSearched} />
+        <ResultsTable 
+          results={results}
+          role={user.role}
+          isLoading={isLoading}
+          hasSearched={hasSearched}
+        />
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
           <HowItWorks />
