@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from app.auth.auth_service import get_current_user
 from app.services.crypto_service import decrypt_customer, build_search_query
-from app.services.fake_db import search_db
+
 
 router = APIRouter()
 
